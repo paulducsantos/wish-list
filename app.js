@@ -8,9 +8,10 @@ app.set('view engine', 'handlebars');
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
-  host     : 'local',
+  host     : 'localhost',
   user     : 'root',
-  database : 'wish-list'
+  password : 'password',
+  database : 'wish_list'
 });
  
 connection.connect();
@@ -21,8 +22,8 @@ connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
   console.log('The solution is: ', rows[0].solution);
 });
 
-app.get("/" function (req, res) {
-	res.rend("wishlist")
+app.get("/", function (req, res) {
+	res.render("wishlist");
 });
 
 app.listen(PORT, function() {
