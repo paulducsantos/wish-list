@@ -1,5 +1,6 @@
 var express = require('express');
 var exphbs  = require('express-handlebars');
+var bodyparser = require('body-parser');
 const PORT = process.env.PORT || 8080;
 var app = express();
 
@@ -16,14 +17,32 @@ var connection = mysql.createConnection({
  
 connection.connect();
  
-connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
-  if (err) throw err;
- 
-  console.log('The solution is: ', rows[0].solution);
-});
+app.use(bodyparser.urlencoded({extended:false}));
 
 app.get("/", function (req, res) {
-	res.render("wishlist");
+  connection.query("SELECT * FROM wishList", function(err, results) {
+    if(err) {
+      throw err;
+    }
+    var data = {
+      wish: results
+    }
+    res.render('wishlist', data);
+  });
+});
+
+app.post("/", function (req, res) {
+  console.log(req.body.wish);
+  connection.query('INSERT INTO wishList (wishitem) VALUES (?) ', [req.body.wish], function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    var data = {
+      wish : result
+    }
+    res.redirect('/');
+  });
+
+
 });
 
 app.listen(PORT, function() {
